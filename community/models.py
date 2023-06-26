@@ -14,6 +14,10 @@ class Author(models.Model):
     email = models.EmailField()
 
 
+class Tag(models.Model):
+    caption = models.CharField(max_length=20)
+
+
 class Post(models.Model):
     title = models.CharField(max_length=150, unique=True)
     excerpt = models.CharField(max_length=180)
