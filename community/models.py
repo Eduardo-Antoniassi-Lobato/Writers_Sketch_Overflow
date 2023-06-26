@@ -8,6 +8,12 @@ from cloudinary.models import CloudinaryField
 STATUS = ((0, "Draft"), (1, "published"))
 
 
+class Author(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+
 class Post(models.Model):
     title = models.CharField(max_length=150, unique=True)
     excerpt = models.CharField(max_length=180)
