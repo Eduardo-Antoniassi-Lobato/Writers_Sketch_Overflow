@@ -25,14 +25,15 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(
-        Author, on_delete=models.SET_NULL, related_name="posts")
+        Author, on_delete=models.CASCADE, related_name="posts")
     content = models.TextField(validators=[MinLengthValidator(10)])
     status = models.IntegerField(choices=STATUS, default=0)
-    likes = models.ManyToManyFieldUser(
+    likes = models.ManyToManyField(
         Author, related_name='blog_likes', blank=True)
+    tags = models.ManyToManyField(Tag)
 
     class Meta:
-        ordering = ['-created_on']
+        ordering = ['-date']
 
     def __str__(self):
         return self.title
@@ -47,11 +48,11 @@ class Comment(models.Model):
     name = models.CharField(max_length=80)
     email = models.EmailField()
     body = models.TextField()
-    created_on = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['created_on']
+        ordering = ['date']
 
     def __str__(self):
         return f"Comment {self.body} by {self.name}"
