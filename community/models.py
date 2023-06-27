@@ -25,7 +25,7 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="posts")
+        Author, on_delete=models.SET_NULL, null=True, related_name="posts")
     content = models.TextField(validators=[MinLengthValidator(10)])
     status = models.IntegerField(choices=STATUS, default=0)
     likes = models.ManyToManyField(
