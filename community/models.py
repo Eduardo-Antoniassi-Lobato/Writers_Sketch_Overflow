@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from cloudinary.models import CloudinaryField
 
-# Create your models here.
-
 STATUS = ((0, "Draft"), (1, "published"))
 
 
@@ -15,7 +13,7 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    caption = models.CharField(max_length=20)
+    caption = models.CharField(max_length=20, null=True)
 
 
 class Post(models.Model):
@@ -25,12 +23,12 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(
-        Author, on_delete=models.SET_NULL, null=True, related_name="posts")
+        User, on_delete=models.CASCADE, related_name="posts")
     content = models.TextField(validators=[MinLengthValidator(10)])
     status = models.IntegerField(choices=STATUS, default=0)
     likes = models.ManyToManyField(
-        Author, related_name='blog_likes', blank=True)
-    tags = models.ManyToManyField(Tag)
+        User, related_name='blog_likes', blank=True)
+    tags = models.ManyToManyField(Tag, null=True)
 
     class Meta:
         ordering = ['-date']
