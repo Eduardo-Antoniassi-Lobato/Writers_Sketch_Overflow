@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Author, Tag
 from django_summernote.admin import SummernoteModelAdmin
 
 
@@ -10,3 +10,7 @@ class PostAdmin(SummernoteModelAdmin):
     list_filter = ('title', 'slug', 'status', 'date')
     summernote_fields = ('content')
     search_fields = ['title', 'content']
+
+
+admin.site.register(Author)
+admin.site.register(Tag)

@@ -20,15 +20,15 @@ class Post(models.Model):
     title = models.CharField(max_length=150, unique=True)
     excerpt = models.CharField(max_length=180)
     featured_image = CloudinaryField('image', default='placeholder')
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateField(auto_now=True)
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="posts")
+        User, on_delete=models.SET_NULL, null=True, related_name="posts")
     content = models.TextField(validators=[MinLengthValidator(10)])
     status = models.IntegerField(choices=STATUS, default=0)
     likes = models.ManyToManyField(
         User, related_name='blog_likes', blank=True)
-    tags = models.ManyToManyField(Tag, null=True)
+    tags = models.ManyToManyField(Tag)
 
     class Meta:
         ordering = ['-date']
