@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_summernote',
+    'crispy_forms',
     'community',
 ]
 
