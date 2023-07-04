@@ -29,8 +29,8 @@ class PostItem(View):
             "post_item.html",
             {
                 "post": post,
-                "comments": comments,   
-                "commented": True,
+                "comments": comments,
+                "commented": False,
                 "liked": liked,
                 "comment_form": CommentForm()
             },
@@ -61,6 +61,7 @@ class PostItem(View):
             {
                 "post": post,
                 "comments": comments,
+                "commented": True,
                 "liked": liked,
                 "comment_form": CommentForm()
             },
