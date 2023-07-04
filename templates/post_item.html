@@ -36,7 +36,18 @@
 
                     <div class="col-1">
                         <strong>
-                            <form class="d-inline" action="{% url 'post_like' post.slug %}" method="POST"></form>
+                            {% if user.is_authenticated %}
+                            <form class="d-inline" action="{% url 'post_like' post.slug %}" method="POST">
+                                {% csrf_token %}
+                                {% if liked %}
+
+                                
+
+                                {% else %}
+
+                                {% endif %}
+
+                            </form>
                         </strong>
 
                         <!-- The number of likes goes before the closing strong tag -->
