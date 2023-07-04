@@ -40,24 +40,19 @@
                             <form class="d-inline" action="{% url 'post_like' post.slug %}" method="POST">
                                 {% csrf_token %}
                                 {% if liked %}
-
-                                <button type="submit" name="post_id" value="{{post.slug}}" class="btn-like"><i
+                                <button type="submit" name="blogpost_id" value="{{post.slug}}" class="btn-like"><i
                                         class="fas fa-heart"></i></button>
-
                                 {% else %}
-
-                                <button type="submit" name="post_id" value="{{post.slug}}" class="btn-like"><i
+                                <button type="submit" name="blogpost_id" value="{{post.slug}}" class="btn-like"><i
                                         class="far fa-heart"></i></button>
-
                                 {% endif %}
-
                             </form>
                             {% else %}
-
+                            <span class="text-secondary"><i class="far fa-heart"></i></span>
+                            {% endif %}
+                            <!-- The number of likes goes before the closing strong tag -->
+                            <span class="text-secondary">{{ post.likes_counter }} </span>
                         </strong>
-
-                        <!-- The number of likes goes before the closing strong tag -->
-                        <strong class="text-secondary"><i class="far fa-heart"></i> {{ post.likes_counter }} </strong>
                     </div>
                     <div class="col-1">
                         {% with comments.count as total_comments %}
