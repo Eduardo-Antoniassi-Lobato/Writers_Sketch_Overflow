@@ -36,7 +36,7 @@ class Post(models.Model):
     content = models.TextField(validators=[MinLengthValidator(10)])
     status = models.IntegerField(choices=STATUS, default=0)
     likes = models.ManyToManyField(
-        User, related_name='blog_likes', blank=True)
+        User, related_name='post_likes', blank=True)
     tags = models.ManyToManyField(Tag)
 
     class Meta:

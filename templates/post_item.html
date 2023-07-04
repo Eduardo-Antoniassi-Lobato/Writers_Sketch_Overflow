@@ -41,14 +41,19 @@
                                 {% csrf_token %}
                                 {% if liked %}
 
-                                <button type="submit" name="blogpost_id" value="{{post.slug}}" class="btn-like"><i
+                                <button type="submit" name="post_id" value="{{post.slug}}" class="btn-like"><i
                                         class="fas fa-heart"></i></button>
 
                                 {% else %}
 
+                                <button type="submit" name="post_id" value="{{post.slug}}" class="btn-like"><i
+                                        class="far fa-heart"></i></button>
+
                                 {% endif %}
 
                             </form>
+                            {% else %}
+
                         </strong>
 
                         <!-- The number of likes goes before the closing strong tag -->
