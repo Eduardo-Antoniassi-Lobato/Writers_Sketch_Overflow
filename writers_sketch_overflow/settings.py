@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'cloudinary_storage',
     'django.contrib.staticfiles',
+    'bootstrap5',
     'cloudinary',
     'allauth',
     'allauth.account',
