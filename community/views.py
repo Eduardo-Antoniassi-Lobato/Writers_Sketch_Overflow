@@ -74,3 +74,15 @@ class QuestionUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
         if self.request.user == question.user:
             return True
         return False
+
+
+class QuestionDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+    model = Question
+    context_object_name = 'question'
+    success_url = 'writersbase:question-list'
+
+    def test_func(self):
+        question = self.get_object()
+        if self.request.user == question.user:
+            return True
+        return False
