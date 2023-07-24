@@ -325,20 +325,13 @@
         <div id="formContent">
             <!-- Tabs Titles -->
             <h2 class="active"> <a href="" style="text-decoration: none;">Sign Up</a> </h2>
-            <h2 class="inactive underlineHover"><a href="" style="text-decoration: none;">Sign In</a></h2>
-
+            <h2 class="inactive underlineHover"><a href="{% url 'register' %}" style="text-decoration: none;">Sign
+                    In</a>
+            </h2>
 
             <!-- Icon -->
             <div class="fadeIn first">
             </div>
-
-            <!-- Login Form -->
-            <!-- <form method="POST">
-              {% csrf_token %}
-              {{form|crispy}}
-              {{p_reg_form.as_p}}
-            <input type="submit" class="fadeIn fourth" value="Sign Up">
-          </form> -->
 
             <form action="" method="POST">
                 {% csrf_token %}
@@ -349,7 +342,7 @@
 
             <!-- Remind Passowrd -->
             <div id="formFooter">
-                <p>Already have an account? <a class="underlineHover" href=""> Login </a></p>
+                <p>Already have an account? <a class="underlineHover" href="{% url 'login' %}"> Login </a></p>
             </div>
 
         </div>
