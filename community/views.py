@@ -1,81 +1,120 @@
-from django.shortcuts import render, get_object_or_404, reverse
-from django.views import generic, View
-from .models import Post, Comment, Tag
-from .forms import CommentForm
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from .models import Question, Comment
+from .forms import CommentForm
+from django.urls import reverse, reverse_lazy
+from django.db import models
 
 
-# Create your views here.
+def home(request):
+    return render(request, 'home.html')
 
 
-class PostList(generic.ListView):
-    model = Post
-    queryset = Post.objects.filter(status=1).order_by('-date')
-    template_name = 'index.html'
-    paginate_by = 7
+def about(request):
+    return render(request, 'about.html')
+
+# CRUD Function
 
 
-class PostItem(View):
-
-    def get(self, request, slug, *args, **kwargs):
-        queryset = Post.objects.filter(status=1)
-        post = get_object_or_404(queryset, slug=slug)
-        comments = post.comments.filter(approved=True).order_by("-date")
+def like_view(request, pk):
+    post = get_object_or_404(Question, id=request.POST.get('question_id'))
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
         liked = False
-        if post.likes.filter(id=self.request.user.id).exists():
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse('writersbase:question-detail', args=[str(pk)]))
+
+
+class QuestionListView(ListView):
+    model = Question
+    context_object_name = 'questions'
+    ordering = ['-date_created']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_input = self.request.GET.get('search-area') or ""
+        if search_input:
+            context['questions'] = context['questions'].filter(
+                title__icontains=search_input)
+            context['search_input'] = search_input
+        return context
+
+
+class QuestionDetailView(DetailView):
+    model = Question
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(QuestionDetailView, self).get_context_data()
+        data_view = get_object_or_404(Question, id=self.kwargs['pk'])
+        total_likes = data_view.total_likes()
+        liked = False
+        if data_view.likes.filter(id=self.request.user.id).exists():
             liked = True
 
-        return render(
-            request,
-            "post_item.html",
-            {
-                "post": post,
-                "comments": comments,
-                "commented": False,
-                "liked": liked,
-                "comment_form": CommentForm()
-            },
-        )
-
-    def post(self, request, slug, *args, **kwargs):
-        queryset = Post.objects.filter(status=1)
-        post = get_object_or_404(queryset, slug=slug)
-        comments = post.comments.filter(approved=True).order_by("-date")
-        liked = False
-        if post.likes.filter(id=self.request.user.id).exists():
-            liked = True
-
-        comment_form = CommentForm(data=request.POST)
-
-        if comment_form.is_valid():
-            comment_form.instance.email = request.user.email
-            comment_form.instance.name = request.user.username
-            comment = comment_form.save(commit=False)
-            comment.post = post
-            comment.save()
-        else:
-            comment_form = CommentForm()
-
-        return render(
-            request,
-            "post_item.html",
-            {
-                "post": post,
-                "comments": comments,
-                "commented": True,
-                "liked": liked,
-                "comment_form": CommentForm()
-            },
-        )
+        context['total_likes'] = total_likes
+        context['liked'] = liked
+        return context
 
 
-class PostLike(View):
+class QuestionCreateView(LoginRequiredMixin, CreateView):
+    model = Question
+    fields = ['title', 'content']
+    context_object_name = 'question'
 
-    def post(self, request, slug, *args, **kwargs):
-        post = get_object_or_404(Post, slug=slug)
-        if post.likes.filter(id=request.user.id).exists():
-            post.likes.remove(request.user)
-        else:
-            post.likes.add(request.user)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-        return HttpResponseRedirect(reverse('post_item', args=[slug]))
+
+class QuestionUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+    model = Question
+    fields = ['title', 'content']
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        question = self.get_object()
+        if self.request.user == question.user:
+            return True
+        return False
+
+
+class QuestionDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+    model = Question
+    context_object_name = 'question'
+    success_url = 'writersbase:question-list'
+
+    def test_func(self):
+        question = self.get_object()
+        if self.request.user == question.user:
+            return True
+        return False
+
+
+class CommentDetailView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'writersbase/question-detail.html'
+
+    def form_valid(self, form):
+        form.instance.question_id = self.kwargs['pk']
+        return super().form_valid(form)
+    success_url = reverse_lazy('writersbase:question-detail')
+
+
+class AddCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'writersbase/question-answer.html'
+
+    def form_valid(self, form):
+        form.instance.question_id = self.kwargs['pk']
+        return super().form_valid(form)
+    success_url = reverse_lazy('writersbase:question-list')
