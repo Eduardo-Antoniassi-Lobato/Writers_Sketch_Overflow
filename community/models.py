@@ -25,27 +25,20 @@ class Tag(models.Model):
         return self.heading
 
 
-class Post(models.Model):
-    title = models.CharField(max_length=150, unique=True)
-    excerpt = models.CharField(max_length=180)
-    featured_image = CloudinaryField('image', default='placeholder')
-    date = models.DateField(auto_now=True)
-    slug = models.SlugField(max_length=200, unique=True)
-    author = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, related_name="posts")
-    content = models.TextField(validators=[MinLengthValidator(10)])
-    status = models.IntegerField(choices=STATUS, default=0)
-    likes = models.ManyToManyField(
-        User, related_name='post_likes', blank=True)
-    tags = models.ManyToManyField(Tag)
-
-    class Meta:
-        ordering = ['-date']
+class Question(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=10000)
+    content = RichTextField()
+    likes = models.ManyToManyField(User, related_name='question_post')
+    date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.title
+        return f'{self.user.username} - Question'
 
-    def likes_counter(self):
+    def get_absolute_url(self):
+        return reverse('community:question-detail', kwargs={'pk': self.pk})
+
+    def total_likes(self):
         return self.likes.count()
 
 
