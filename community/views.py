@@ -61,4 +61,16 @@ class QuestionDetailView(DetailView):
         return context
 
 
+class QuestionUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+    model = Question
+    fields = ['title', 'content']
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        question = self.get_object()
+        if self.request.user == question.user:
+            return True
+        return False
