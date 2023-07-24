@@ -108,6 +108,3 @@ class AddCommentView(CreateView):
         form.instance.question_id = self.kwargs['pk']
         return super().form_valid(form)
     success_url = reverse_lazy('writersbase:question-list')
-
-
-
