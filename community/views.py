@@ -86,3 +86,14 @@ class QuestionDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
         if self.request.user == question.user:
             return True
         return False
+
+
+class CommentDetailView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'writersbase/question-detail.html'
+
+    def form_valid(self, form):
+        form.instance.question_id = self.kwargs['pk']
+        return super().form_valid(form)
+    success_url = reverse_lazy('writersbase:question-detail')
